@@ -25,11 +25,12 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 
 router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const skill = await prisma.skill.findFirst({ where: { id: req.params.id, userId: req.userId } });
+    const id = req.params.id as string;
+    const skill = await prisma.skill.findFirst({ where: { id, userId: req.userId } });
     if (!skill) { res.status(404).json({ error: 'Skill not found' }); return; }
     const { name, description, creditRate, yearsOfExp } = req.body;
     const updated = await prisma.skill.update({
-      where: { id: req.params.id },
+      where: { id },
       data: {
         ...(name && { name }), ...(description !== undefined && { description }),
         ...(creditRate && { creditRate: Math.min(10, Math.max(1, creditRate)) }),
@@ -42,9 +43,10 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
 
 router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const skill = await prisma.skill.findFirst({ where: { id: req.params.id, userId: req.userId } });
+    const id = req.params.id as string;
+    const skill = await prisma.skill.findFirst({ where: { id, userId: req.userId } });
     if (!skill) { res.status(404).json({ error: 'Skill not found' }); return; }
-    await prisma.skill.delete({ where: { id: req.params.id } });
+    await prisma.skill.delete({ where: { id } });
     res.json({ success: true });
   } catch (e: any) { res.status(500).json({ error: e.message }); }
 });

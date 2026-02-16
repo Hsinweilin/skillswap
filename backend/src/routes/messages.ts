@@ -33,15 +33,15 @@ router.get('/:userId', authMiddleware, async (req: AuthRequest, res: Response) =
     const messages = await prisma.message.findMany({
       where: {
         OR: [
-          { senderId: req.userId, receiverId: req.params.userId },
-          { senderId: req.params.userId, receiverId: req.userId }
+          { senderId: req.userId, receiverId: req.params.userId as string },
+          { senderId: req.params.userId as string, receiverId: req.userId }
         ]
       },
       orderBy: { createdAt: 'asc' }
     });
     // Mark as read
     await prisma.message.updateMany({
-      where: { senderId: req.params.userId, receiverId: req.userId, read: false },
+      where: { senderId: req.params.userId as string, receiverId: req.userId, read: false },
       data: { read: true }
     });
     res.json(messages);
@@ -51,7 +51,7 @@ router.get('/:userId', authMiddleware, async (req: AuthRequest, res: Response) =
 router.post('/:userId', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const message = await prisma.message.create({
-      data: { content: req.body.content, senderId: req.userId!, receiverId: req.params.userId }
+      data: { content: req.body.content, senderId: req.userId!, receiverId: req.params.userId as string }
     });
     res.status(201).json(message);
   } catch (e: any) { res.status(500).json({ error: e.message }); }

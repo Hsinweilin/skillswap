@@ -7,7 +7,7 @@ const router = Router();
 router.get('/:userId', async (req, res) => {
   try {
     const reviews = await prisma.review.findMany({
-      where: { revieweeId: req.params.userId },
+      where: { revieweeId: req.params.userId as string },
       include: { reviewer: { select: { id: true, name: true, avatar: true } } },
       orderBy: { createdAt: 'desc' }
     });

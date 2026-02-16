@@ -33,7 +33,7 @@ router.post('/', authMiddleware, upload.single('file'), async (req: AuthRequest,
 router.patch('/:id/verify', async (req, res) => {
   try {
     const cert = await prisma.certificate.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: { verified: true }
     });
     // Recalculate trust score
